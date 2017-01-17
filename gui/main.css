@@ -1,0 +1,123 @@
+/****************************************
+ * Customize mdl layout
+ ****************************************/
+
+/* Make card as small */
+.mdl-card {
+    min-height: 0;
+}
+.mdl-card__title-text {
+    padding: 8px 0;
+    font-size: 24px;
+    display: inline;
+}
+.mdl-card__title-text + button {
+    top: -2px;
+    float: right;
+}
+
+/* Enable icon inside drawer */
+.mdl-layout__drawer > .mdl-navigation > .mdl-navigation__link {
+    padding: 16px;
+}
+.mdl-layout__drawer > .mdl-navigation > .mdl-navigation__link > .material-icons {
+    margin-right: 6px;
+}
+
+
+/* For layout */
+::-webkit-scrollbar {
+    display: none;
+}
+#main {
+    height: 100%;
+    min-width: 800px;
+    min-height: 400px;
+}
+#graph-panel {
+    position: fixed;
+    width: calc(100% - 262px);
+    height: calc(100% - 76px);
+    min-width: 538px;
+    min-height: 324px;
+    padding: 6px;
+}
+@media screen and (max-width: 1024px) {
+    #graph-panel {
+        height: calc(100% - 66px);
+        min-height: 334px;
+    }
+}
+#info-panel {
+    position: relative;
+    left: calc(100% - 256px);
+    width: 250px;
+    padding: 6px;
+}
+#graph-canvas {
+    height: 100%;
+    width: 100%;
+}
+
+
+
+#info-panel .mdl-card {
+    width: 100%;
+    padding: 0;
+    margin-bottom: 6px;
+}
+
+#info-panel, #info-panel div {
+    overflow: visible;
+}
+#info-panel .collapse-content > .mdl-textfield {
+    margin-top: 10px;
+    padding: 20px 0 0 0;
+}
+#info-panel .collapse-content > .mdl-textfield .mdl-textfield__label:after {
+    bottom: 0;
+}
+#info-panel .collapse-content > .mdl-checkbox {
+    margin-top: 20px;
+}
+#info-panel .collapse-content > .mdl-button--raised {
+    color: rgba(0,0,0,.54);
+    margin-top: 20px;
+}
+#info-panel #settings-relayout {
+    margin-right: 60px;
+}
+
+#info-panel #components-table-div {
+    margin-top: 20px;
+    max-height: 500px;
+    overflow-y: scroll;
+}
+
+#nprogress .bar {
+    background-color: red;
+}
+#nprogress .spinner-icon {
+    border-top-color: red;
+    border-left-color: red;
+}
+
+#shortest_path-start-div, #shortest_path-end-div {
+    width: 20%;
+    margin-right: 6px;
+}
+#shortest_path {
+    float: right;
+}
+#shortest_path-result .mdl-chip {
+    margin-top: 20px;
+}
+#shortest_path-result .mdl-data-table {
+    margin-top: 5px;
+}
+
+#info-panel #shortest_path-result {
+    margin-top: 5px;
+    max-height: 500px;
+    overflow-y: scroll;
+}

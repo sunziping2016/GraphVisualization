@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>图论大作业 - 图分析的可视化</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="node_modules/material-icons/css/material-icons.min.css">
+    <link rel="stylesheet" href="node_modules/material-design-lite/material.min.css">
+    <link rel="stylesheet" href="node_modules/getmdl-select/getmdl-select.min.css">
+    <link rel="stylesheet" href="node_modules/nprogress/nprogress.css">
+    <link rel="stylesheet" href="main.css">
+    <script src="node_modules/material-design-lite/material.js"></script>
+    <script src="node_modules/three/build/three.min.js"></script>
+    <script src="node_modules/getmdl-select/getmdl-select.min.js"></script>
+    <script src="node_modules/nprogress/nprogress.js"></script>
+</head>
+<body>
+<div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <!-- Navigation bar -->
+    <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+            <span class="mdl-layout-title">图分析的可视化</span>
+            <div class="mdl-layout-spacer"></div>
+            <nav class="mdl-navigation">
+                <a class="mdl-navigation__link" href="#" id="menu-about">关于</a>
+            </nav>
+        </div>
+    </header>
+    <!-- Menu drawer -->
+    <div class="mdl-layout__drawer" id="drawer">
+        <span class="mdl-layout-title">文件</span>
+        <nav class="mdl-navigation">
+            <hr>
+            <a class="mdl-navigation__link" href="#" id="menu-import"><i class="material-icons">import_export</i>导入</a>
+            <a class="mdl-navigation__link" href="#" id="menu-open"><i class="material-icons">folder_open</i>打开</a>
+            <a class="mdl-navigation__link" href="#" id="menu-save"><i class="material-icons">save</i>保存</a>
+            <a class="mdl-navigation__link" href="#" id="menu-close"><i class="material-icons">close</i>关闭</a>
+            <hr>
+        </nav>
+        <div class="mdl-layout-spacer"></div>
+        <nav class="mdl-navigation">
+            <a class="mdl-navigation__link" href="#" id="menu-exit"><i class="material-icons">exit_to_app</i>退出</a>
+        </nav>
+    </div>
+    <main id="main" class="mdl-layout__content mdl-color--grey-100">
+        <div id="graph-panel">
+            <div id="graph-canvas" class="mdl-card mdl-shadow--2dp mdl-color--white"></div>
+        </div>
+        <div id="info-panel">
+            <!-- View settings card -->
+            <div class="mdl-card mdl-shadow--2dp mdl-color--white">
+                <div class="mdl-card__supporting-text">
+                    <span class="mdl-card__title-text">视图</span>
+                    <button id="settings-view-more" class="mdl-button mdl-js-button mdl-button--icon">
+                        <i class="material-icons">more_vert</i>
+                    </button>
+                    <div class="collapse-content">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select getmdl-select__fullwidth" id="settings-layout-div">
+                            <input class="mdl-textfield__input" type="text" id="settings-layout" readonly tabIndex="-1">
+                            <label class="mdl-textfield__label" for="settings-layout">布局算法</label>
+                            <label for="settings-layout">
+                                <i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i>
+                            </label>
+                            <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" for="settings-layout" id="settings-layout-options">
+                            </ul>
+                            <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="settings-layout">
+                                计算布局所用的算法
+                            </div>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="settings-layout_tolerance-div">
+                            <input class="mdl-textfield__input" type="text" value="0.001" pattern="[0-9]+(\.[0-9]+)?(e-?[0-9]+)?" id="settings-layout_tolerance">
+                            <label class="mdl-textfield__label" for="settings-layout_tolerance">能量容差</label>
+                            <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="settings-layout_tolerance">
+                                Kamada Kawai 算法停止的能量变化量最大阙值
+                            </div>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="settings-layout_iterations-div">
+                            <input class="mdl-textfield__input" type="text" value="100" pattern="[0-9]+" id="settings-layout_iterations">
+                            <label class="mdl-textfield__label" for="settings-layout_iterations">迭代次数</label>
+                            <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="settings-layout_iterations">
+                                Fruchterman Reingold 算法停止的迭代次数
+                            </div>
+                        </div>
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="settings-relayout">
+                            重绘
+                        </button>
+                        <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="settings-relayout" id="settings-relayout-tooltip">
+                            重新计算布局
+                        </div>
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="settings-iterate_layout">
+                            迭代
+                        </button>
+                        <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="settings-iterate_layout" id="settings-iterate_layout-tooltip">
+                            在已有基础上计算布局
+                        </div>
+                        <!-- Color setting -->
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label getmdl-select getmdl-select__fullwidth" id="settings-node_color-div">
+                            <input class="mdl-textfield__input" type="text" id="settings-node_color" readonly tabIndex="-1">
+                            <label class="mdl-textfield__label" for="settings-node_color">染色算法</label>
+                            <label for="settings-node_color">
+                                <i class="mdl-icon-toggle__label material-icons">keyboard_arrow_down</i>
+                            </label>
+                            <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu" for="settings-node_color" id="settings-node_color-options">
+                            </ul>
+                            <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="settings-node_color">
+                                节点色彩选取的算法
+                            </div>
+                        </div>
+                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="settings-label" id="settings-label-div">
+                            <input type="checkbox" class="mdl-checkbox__input" id="settings-label">
+                            <span class="mdl-checkbox__label">节点标签</span>
+                        </label>
+                        <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="settings-label-div">
+                            是否显示节点标签
+                        </div>
+                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="settings-rotate" id="settings-rotate-div">
+                            <input type="checkbox" class="mdl-checkbox__input" id="settings-rotate">
+                            <span class="mdl-checkbox__label">禁止旋转</span>
+                        </label>
+                        <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="settings-rotate-div">
+                            是否禁止对视角的旋转操作
+                        </div>
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="settings-reset_viewport">
+                            重置视角
+                        </button>
+                        <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="settings-reset_viewport">
+                            重置视角至初始的状态
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Components card -->
+            <div class="mdl-card mdl-shadow--2dp mdl-color--white">
+                <div class="mdl-card__supporting-text">
+                    <h3 class="mdl-card__title-text">分量</h3>
+                    <button class="mdl-button mdl-js-button mdl-button--icon">
+                        <i class="material-icons">more_vert</i>
+                    </button>
+                    <div class="collapse-content">
+                        <div id="components-table-div">
+                            <table class="mdl-data-table mdl-data-table--selectable">
+                                <thead><tr>
+                                    <th>
+                                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-data-table__select" for="components-table-header">
+                                            <input type="checkbox" id="components-table-header" class="mdl-checkbox__input">
+                                        </label>
+                                    </th>
+                                    <th>序号</th>
+                                    <th>节点个数</th>
+                                </tr></thead>
+                                <tbody id="components-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Algorithm card -->
+            <div class="mdl-card mdl-shadow--2dp mdl-color--white">
+                <div class="mdl-card__supporting-text">
+                    <h3 class="mdl-card__title-text">算法</h3>
+                    <button class="mdl-button mdl-js-button mdl-button--icon">
+                        <i class="material-icons">more_vert</i>
+                    </button>
+                    <div class="collapse-content">
+                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="minimum-spanning-tree" id="minimum-spanning-tree-div">
+                            <input type="checkbox" class="mdl-checkbox__input" id="minimum-spanning-tree">
+                            <span class="mdl-checkbox__label">最小生成树</span>
+                        </label>
+                        <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="settings-label-div">
+                            计算最小生成树
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="shortest_path-start-div">
+                            <input class="mdl-textfield__input" type="text" pattern="[0-9]+" id="shortest_path-start">
+                            <label class="mdl-textfield__label" for="shortest_path-start">起点</label>
+                            <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="shortest_path-start">
+                                最短路算法的起始节点 ID
+                            </div>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="shortest_path-end-div">
+                            <input class="mdl-textfield__input" type="text" pattern="[0-9]+" id="shortest_path-end">
+                            <label class="mdl-textfield__label" for="shortest_path-end">终点</label>
+                            <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="shortest_path-end">
+                                最短路算法的目标节点 ID
+                            </div>
+                        </div>
+                        <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="shortest_path">
+                            计算
+                        </button>
+                        <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="shortest_path">
+                            计算两点之间的最短路径
+                        </div>
+                        <div id="shortest_path-result">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Information card -->
+            <div class="mdl-card mdl-shadow--2dp mdl-color--white">
+                <div class="mdl-card__supporting-text">
+                    <h3 class="mdl-card__title-text">信息</h3>
+                    <button class="mdl-button mdl-js-button mdl-button--icon">
+                        <i class="material-icons">more_vert</i>
+                    </button>
+                    <div class="collapse-content">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" pattern="[0-9]+" id="graph-vertices-num" readonly>
+                            <label class="mdl-textfield__label" for="graph-vertices-num">节点个数</label>
+                            <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="graph-vertices-num">
+                                图的节点个数
+                            </div>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" pattern="[0-9]+" id="graph-edges-num" readonly>
+                            <label class="mdl-textfield__label" for="graph-edges-num">边的个数</label>
+                            <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="graph-edges-num">
+                                图的边的个数
+                            </div>
+                        </div>
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" pattern="[0-9]+" id="graph-components-num" readonly>
+                            <label class="mdl-textfield__label" for="graph-edges-num">连通分量个数</label>
+                            <div class="mdl-tooltip mdl-tooltip--left mdl-tooltip--large" data-mdl-for="graph-components-num">
+                                图的连通分量个数
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <dialog id="dialog-about" class="mdl-dialog">
+        <h3 class="mdl-dialog__title">关于</h3>
+        <div class="mdl-dialog__content">
+            <p>可在 <a class="extern" href="https://github.com/sunziping2016/Graph-Visualization">Github</a> 上获取该项目的源代码。</p>
+            <p>感谢 <a class="extern" href="http://www.boost.org/doc/libs/1_63_0/libs/graph/doc/index.html">Boost Graph Library</a> 上提供了部分布局的代码。</p>
+            <p>感谢 <a class="extern" href="http://electron.atom.io/">Electron</a> 使得桌面应用上的前端技术成为可能。</p>
+            <p>感谢 <a class="extern" href="https://threejs.org/">three.js</a> 给前端带来了炫酷的 WebGL。</p>
+            <p>感谢 Google 的 <a class="extern" href="https://getmdl.io/">Material Design Lite</a>，虽然很不好用，但还不算丑。</p>
+            <p>最后感谢　<a class="extern" href="https://github.com/node-ffi/node-ffi">node-ffi</a> 提供了载入 C++ 动态链接库的方法。</p>
+        </div>
+        <div class="mdl-dialog__actions">
+            <button type="button" class="mdl-button" id="menu-about-close">关闭</button>
+        </div>
+    </dialog>
+    <script src="object-watch.js"></script>
+    <script src="graph.js"></script>
+    <script src="trackball-controls.js"></script>
+    <script src="stats.js"></script>
+    <script src="label.js"></script>
+    <script src="graph-drawer.js"></script>
+    <script src="main.js"></script>
+</div>
+</body>
+</html>
